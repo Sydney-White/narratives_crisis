@@ -7,3 +7,6 @@ Data/
 *.Rhistory
 *.Rproj.user
 .DS_Store
+.Rproj.user
+*.heic
+*.HEIC
