@@ -11,11 +11,11 @@ library(tidyverse)
 
 # load data ---------------------------------------------------------------
 
-stage2_output <- fread("Data/python_data_outputs/classified_stage2_output.csv") 
+stage2_output <- fread("Data/data_outputs/classified_stage2_output.csv") 
 sampled_articles <- fread("Data/python_data_outputs/sampled_articles.csv")
-bert <- fread("Data/python_data_outputs/bert_blame_probabilities_full.csv")
+bert <- fread("Data/data_outputs/bert_blame_probabilities_full.csv")
 
-sf_1900 <- read_sf(paste0("Data/data_inputs/Shapefiles/", "nhgis0001_shapefile_tl2008_us_county_1900/",
+sf_1900 <- read_sf(paste0("Data/Shapefiles/", "nhgis0001_shapefile_tl2008_us_county_1900/",
                           "US_county_1900_conflated.shp")) %>%
   mutate(NHGISST = as.numeric(NHGISST)) %>%
   mutate(NHGISCTY = as.numeric(NHGISCTY)) %>%
@@ -31,30 +31,6 @@ chronicling_america <- read_csv("Data/data_inputs/chronicling-america.csv") %>%
     longitude = as.numeric(str_trim(longitude))
   ) %>%
   filter(!is.na(latitude), !is.na(longitude))
-
-# export sample -----------------------------------------------------------
-
-confidence_output <- stage2_output %>% 
-  filter(row_id == 61990)
-confidence_output$excerpt
-
-blame_output <- stage2_output %>% 
-  filter(row_id == 71567)
-
-blame_output$excerpt
-
-french_english_output <- stage2_output %>% 
-  filter(row_id %in%  c(67260,64550))
-
-# stargazer(
-#   french_english_output,
-#   type = "latex",
-#   header = FALSE,
-#   summary = FALSE,
-#   label = "tab:french_english",
-#   title = "Two Prompts in LLM Classification (French and English). Effective translations of one another, but classified differently; the model likely struggles more with less common languages.",
-#   out = "~/Dropbox/Apps/Overleaf/HPE Final Project/appendix_tables/french_english_label.tex"
-# )
 
 # normalize text for join -------------------------------------------------
 
@@ -85,7 +61,7 @@ plot_df <- stage2_output %>%
 
 
 p <- ggplot(plot_df, aes(x = label, y = n)) +
-  geom_col(fill = "#1E90FF", alpha = 0.8) +
+  geom_col(fill = "#2A7F7F", alpha = 0.8) +
   geom_text(aes(label = paste0(percent, "%")), 
             hjust = -0.1, size = 3.8, family = "serif") +
   coord_flip() +

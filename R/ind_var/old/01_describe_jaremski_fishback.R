@@ -12,7 +12,8 @@ custom_palette <- colorRampPalette(RColorBrewer::brewer.pal(9, "Reds"))(10)
 
 input_path <- "Data/Jaremski_Fishback - Replication File/Data/banks+ag.dta"
 output_panel_csv <- "Data/data_outputs/jaremski_fishback_banks_1900_1910.csv"
-dir.create(path.expand("~/Dropbox/Apps/Overleaf/New Independent Var/jaremski_data"), recursive = TRUE, showWarnings = FALSE)
+dir.create(path.expand("~/Dropbox/Apps/Overleaf/New Independent Var/jaremski_data"), 
+           recursive = TRUE, showWarnings = FALSE)
 
 # 1) Build and write cleaned 1900-1910 bank panel ------------------------
 
@@ -64,40 +65,11 @@ banks_panel_1900_1910 <- banks_raw %>%
   ) %>%
   arrange(year, state_fips, county_fips)
 
-write_csv(banks_panel_1900_1910, output_panel_csv)
+write.csv(banks_panel_1900_1910, "Data/data_outputs/jaremski_fishback.csv")
 
 # Read back the saved panel and run descriptives from this dataset --------
 
-banks_panel <- read_csv(output_panel_csv, show_col_types = FALSE)
-
-# 2) Aggregate counts over time -------------------------------------------
-
-aggregate_over_time <- banks_panel %>%
-  group_by(year) %>%
-  summarise(
-    county_number = sum(num_county_banks, na.rm = TRUE),
-    national_number = sum(num_national_banks, na.rm = TRUE),
-    private_number = sum(num_private_banks, na.rm = TRUE),
-    total_number = sum(num_total_banks, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  pivot_longer(-year, names_to = "type", values_to = "count")
-
-p <- ggplot(aggregate_over_time, aes(x = year, y = count, color = type)) +
-  geom_line() +
-  scale_color_manual(values = c(
-    "county_number" = "#1b9e77",
-    "national_number" = "#d95f02",
-    "private_number" = "#7570b3",
-    "total_number" = "#000000"
-  )) +
-  theme_bw() +
-  theme(
-    legend.title = element_blank(),
-    legend.position = "bottom"
-  )
-
-ggsave(plot = p, filename = "~/Dropbox/Apps/Overleaf/New Independent Var/jaremski_data/num_operating.pdf", device = pdf, bg = "white", width = 6, height = 4.29, units = "in")
+banks_panel <- read.csv("Data/data_outputs/jaremski_fishback.csv")
 
 # 3) Distribution plot and summary tables (1900) -------------------------
 

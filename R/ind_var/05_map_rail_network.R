@@ -42,6 +42,8 @@ map_rail <- function(year_string, string_title) {
     ggtitle(string_title)
 }
 
-p <- map_rail("1900", "1900 Railways")
+p <- map_rail("1900", "")
 ggsave(plot = p, filename = "~/Dropbox/Apps/Overleaf/New Independent Var/other_images/rail_1900.pdf",
+       device = pdf, bg = "white", width = 6, height = 4.29, units = "in")
+ggsave(plot = p, filename = "~/Dropbox/Apps/Overleaf/1907 Bankers Panic/appendix_figures/rail_1900.pdf",
        device = pdf, bg = "white", width = 6, height = 4.29, units = "in")

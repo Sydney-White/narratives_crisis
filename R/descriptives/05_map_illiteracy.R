@@ -8,7 +8,7 @@ custom_palette <- colorRampPalette(RColorBrewer::brewer.pal(9, "PuBuGn"))(10)
 
 # -------------------------------------------------------------------------
 
-sf_1900 <- read_sf(paste0("Data/data_inputs/Shapefiles/", "nhgis0001_shapefile_tl2008_us_county_1900/",
+sf_1900 <- read_sf(paste0("Data/Shapefiles/", "nhgis0001_shapefile_tl2008_us_county_1900/",
                           "US_county_1900_conflated.shp")) %>%
   mutate(NHGISST = as.numeric(NHGISST)) %>%
   mutate(NHGISCTY = as.numeric(NHGISCTY)) %>%
@@ -51,7 +51,7 @@ p <- ggplot() +
     legend.position = "bottom"
   )
 
-ggsave(plot = p, filename = "~/Dropbox/Apps/Overleaf/HPE Final Project/figures/illiteracy_national.pdf",
+ggsave(plot = p, filename = "~/Dropbox/Apps/Overleaf/1907 Bankers Panic/figures/illiteracy_national.pdf",
        device = pdf, bg = "white", width = 4.88, height = 3.34, units = "in")
 
 # national level ----------------------------------------------------------

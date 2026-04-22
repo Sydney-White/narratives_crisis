@@ -9,8 +9,13 @@ rm(list = ls())
 
 # show monthly time series  -----------------------------------------------
 
-all_articles <- fread("Data/data_outputs/financial_articles_all.csv")
+all_articles <- fread("Data/data_outputs/financial_articles_all.csv") %>% 
+
 gc() 
+
+all_english <- all_articles %>% 
+  filter(Languages == "English")
+
 df_dates <- all_articles %>%
   filter(date >= as.Date("1907-01-01"),
          date <= as.Date("1908-06-30")) %>%

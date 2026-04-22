@@ -1,4 +1,4 @@
-#### populism literature 
+#### Funke et al paper -- replicate literature 
 
 rm(list = ls())
 library(haven)
@@ -9,7 +9,7 @@ library(texreg)
 
 # -------------------------------------------------------------------------
 
-funke_data <- read_dta("EER-D-16-00187_replication/EER-D-16-00187_data.dta")
+funke_data <- read_dta("Data/data_inputs/EER-D-16-00187_replication/EER-D-16-00187_data.dta")
 colnames(funke_data)
 unique(funke_data$iso)
 
@@ -58,11 +58,8 @@ lp_models <- lapply(horizons, function(h) {
   )
 })
 
-output_path <- "~/Dropbox/Apps/Overleaf/Competing Narratives of Financial Crises/tables/table_lp_far_right.tex"
-
 texreg(
   lp_models,
-  file = output_path,
   custom.model.names = paste("Year", 1:5),
   custom.coef.map = list(
     "pk_fin"  = "Financial recession",
@@ -115,6 +112,4 @@ stargazer(
   Otherwise between 1919-2014, as in their first table.",
   label = "tab:negative_far_right",
   rownames = FALSE,
-  digits = 2, 
-  out = "~/Dropbox/Apps/Overleaf/Competing Narratives of Financial Crises/tables/negative_responses.tex"
-)
+  digits = 2)

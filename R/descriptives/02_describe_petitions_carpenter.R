@@ -47,7 +47,6 @@ petitions_small <- petitions %>%
 
 write.csv(petitions_small, "Data/data_outputs/banking_petitions.csv")
 
-
 # parse date
 df <- petitions_small %>%
   mutate(date = ymd(date))
@@ -94,4 +93,12 @@ issue_table <- df %>%
   ) %>%
   arrange(group)
 
-issue_table
+stargazer(
+  issue_table,
+  summary = FALSE,
+  rownames = FALSE,
+  type = "latex",
+  title = "Petition Issue by Petitioner Group",
+  out = "~/Dropbox/Apps/Overleaf/1907 Bankers Panic/appendix_tables/reform_by_group.tex", 
+  digits = 0
+)

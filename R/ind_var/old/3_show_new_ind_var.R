@@ -1,4 +1,4 @@
-### make new ind. var 
+### make straight line ind. var 
 
 library(readr)
 library(dplyr)

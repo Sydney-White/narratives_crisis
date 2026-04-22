@@ -52,42 +52,47 @@ news_narratives_bank <- news_narratives %>%
                                        "NHGISCTY" = "from_NHGISCTY"))
 
 news_narratives_bank <- news_narratives_bank %>%
-  mutate(exposure_circ_z = scale(ln_bank_circ_exposure)[,1], 
-         exposure_cap_z = scale(ln_bank_cap_exposure)[,1])
+  mutate(
+    bank_circ_exposure_std = scale(bank_circ_exposure),
+    bank_cap_exposure_std  = scale(bank_cap_exposure)
+  )
 
 base_1 <- feols(
-  llm_blame_share ~ exposure_circ_z:after_october | NHGISNAM + month,
+  llm_blame_share ~ bank_circ_exposure_std:after_october | NHGISNAM + month,
   cluster = ~ STATENAM,
   data = news_narratives_bank
 )
 base_1
+
 base_2 <- feols(
-  llm_blame_share ~ exposure_cap_z:after_october | NHGISNAM + month,
+  llm_blame_share ~ bank_cap_exposure_std:after_october | NHGISNAM + month,
   cluster = ~ STATENAM,
   data = news_narratives_bank
 )
 base_2
+
 bert_base_1 <- feols(
-  bert_blame_share ~ exposure_circ_z:after_october | NHGISNAM + month,
+  bert_blame_share ~ bank_circ_exposure_std:after_october | NHGISNAM + month,
   cluster = ~ STATENAM,
   data = news_narratives_bank
 )
 bert_base_1
 bert_base_2 <- feols(
-  bert_blame_share ~ exposure_cap_z:after_october | NHGISNAM + month,
+  bert_blame_share ~ bank_cap_exposure_std:after_october | NHGISNAM + month,
   cluster = ~ STATENAM,
   data = news_narratives_bank
 )
 bert_base_2
+
 coef_names <- list(
-  "exposure_circ_z:after_october" = "Circ. Exposure × After Oct. 1907", 
-  "exposure_cap_z:after_october" = "Assets Exposure × After Oct. 1907"
+  "bank_circ_exposure_std:after_october" = "Circ. Exposure × After Oct. 1907", 
+  "bank_cap_exposure_std:after_october" = "Assets Exposure × After Oct. 1907"
 )
 
 texreg(
   list(base_1, base_2, bert_base_1, bert_base_2),
   custom.model.names = c("(1)", "(2)", "(3)", "(4)"),
-  file = "~/Dropbox/Apps/Overleaf/Financial Crisis Narratives - LLM/exposure_blame.tex",
+  file = "~/Dropbox/Apps/Overleaf/1907 Bankers Panic/tables/exposure_blame.tex",
   label = "table:exposure_blame",
   custom.header = list(
     "\\textit{LLM-Based Blame Share}"  = 1:2,
@@ -102,6 +107,7 @@ texreg(
   custom.gof.names = c("N", "$R^2$"),
   stars = c(0.1, 0.05, 0.01),
   digits = 3,
+  fontsize = "tiny",
   booktabs = TRUE,
   threeparttable = TRUE,
   use.packages = FALSE,
@@ -124,6 +130,94 @@ texreg(
     "Exposure is standardized and interacted with an indicator for months ",
     "after October 1907. All specifications include county and month ",
     "fixed effects. Standard errors are clustered at the state level."
+  )
+)
+
+# -------------------------------------------------------------------------
+# first table subset: Census Midwest + Northeast only
+
+northeast_states <- c(
+  "Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Vermont",
+  "New Jersey", "New York", "Pennsylvania"
+)
+
+midwest_states <- c(
+  "Illinois", "Indiana", "Michigan", "Ohio", "Wisconsin",
+  "Iowa", "Kansas", "Minnesota", "Missouri", "Nebraska",
+  "North Dakota", "South Dakota"
+)
+
+news_narratives_bank_midwest_northeast <- news_narratives_bank %>%
+  filter(STATENAM %in% c(northeast_states, midwest_states)) %>%
+  mutate(
+    bank_circ_exposure_std = scale(bank_circ_exposure),
+    bank_cap_exposure_std  = scale(bank_cap_exposure)
+  )
+
+base_1_midwest_northeast <- feols(
+  llm_blame_share ~ bank_circ_exposure_std:after_october | NHGISNAM + month,
+  cluster = ~ STATENAM,
+  data = news_narratives_bank_midwest_northeast
+)
+
+base_2_midwest_northeast <- feols(
+  llm_blame_share ~ bank_cap_exposure_std:after_october | NHGISNAM + month,
+  cluster = ~ STATENAM,
+  data = news_narratives_bank_midwest_northeast
+)
+
+bert_base_1_midwest_northeast <- feols(
+  bert_blame_share ~ bank_circ_exposure_std:after_october | NHGISNAM + month,
+  cluster = ~ STATENAM,
+  data = news_narratives_bank_midwest_northeast
+)
+
+bert_base_2_midwest_northeast <- feols(
+  bert_blame_share ~ bank_cap_exposure_std:after_october | NHGISNAM + month,
+  cluster = ~ STATENAM,
+  data = news_narratives_bank_midwest_northeast
+)
+
+texreg(
+  list(
+    base_1_midwest_northeast,
+    base_2_midwest_northeast,
+    bert_base_1_midwest_northeast,
+    bert_base_2_midwest_northeast
+  ),
+  custom.model.names = c("(1)", "(2)", "(3)", "(4)"),
+  file = "~/Dropbox/Apps/Overleaf/1907 Bankers Panic/tables/exposure_blame_midwest_northeast.tex",
+  label = "table:exposure_blame_midwest_northeast",
+  custom.header = list(
+    "\\textit{LLM-Based Blame Share}"  = 1:2,
+    "\\textit{BERT-Based Blame Share}" = 3:4
+  ),
+  custom.coef.map = coef_names,
+  custom.gof.rows = list(
+    "Controls"   = c("--", "--", "--", "--"),
+    "County FEs" = c("\\checkmark", "\\checkmark", "\\checkmark", "\\checkmark"),
+    "Month FEs"  = c("\\checkmark", "\\checkmark", "\\checkmark", "\\checkmark")
+  ),
+  custom.gof.names = c("N", "$R^2$"),
+  stars = c(0.1, 0.05, 0.01),
+  digits = 3,
+  fontsize = "tiny",
+  booktabs = TRUE,
+  threeparttable = TRUE,
+  use.packages = FALSE,
+  include.nobs = TRUE,
+  include.groups = FALSE,
+  include.rsquared = TRUE,
+  include.adjrs = FALSE,
+  include.proj.stats = FALSE,
+  include.deviance = FALSE,
+  include.loglik = FALSE,
+  include.pseudors = FALSE,
+  caption = "\\textit{Exposure to Crisis and Financial Blame in Newspapers (Midwest + Northeast).}",
+  custom.note = paste0(
+    "\\item Notes: Same specification as the main table, but estimated only on counties in Census Midwest and Northeast states. ",
+    "Exposure is standardized within this restricted sample and interacted with an indicator for months after October 1907. ",
+    "All specifications include county and month fixed effects. Standard errors are clustered at the state level."
   )
 )
 
@@ -244,4 +338,3 @@ texreg(
     "Standard errors are clustered at the state level."
   )
 )
-
